@@ -2,7 +2,7 @@ Project Da Vinci
 ================
 Welcome to the official repository for Project Da Vinci - an online banking application for the fictional bank *DV Bank*.<br />
 
-We are 4 2nd year IT students at graduating from the NSCC Institute of Technology in 2020.<br />
+We are 4 2nd year IT students graduating from the NSCC Institute of Technology in 2020.<br />
 
 Meet our eager and ambitious team!<br />
 * Anastasia Van Riet (GitHub username: **anastasiavanriet**)
