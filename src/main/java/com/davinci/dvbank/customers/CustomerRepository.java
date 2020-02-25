@@ -1,4 +1,4 @@
-package com.davinci.dvbank;
+package com.davinci.dvbank.customers;
 
 import java.util.List;
 

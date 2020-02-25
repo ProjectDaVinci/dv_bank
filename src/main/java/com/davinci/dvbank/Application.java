@@ -1,5 +1,7 @@
 package com.davinci.dvbank;
 
+import com.davinci.dvbank.customers.Customer;
+import com.davinci.dvbank.customers.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
