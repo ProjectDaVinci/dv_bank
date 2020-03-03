@@ -1,6 +1,9 @@
 package com.davinci.dvbank.customers;
 
+import com.davinci.dvbank.accounts.Account;
 import org.springframework.data.annotation.Id;
+
+import java.util.List;
 
 
 public class Customer {
@@ -16,11 +19,13 @@ public class Customer {
     public String email;
     public String password;
     public String phoneNumber;
+    public List<Account> accounts;
 
     public Customer() {}
 
-    public Customer(String firstName, String lastName, String province, String address, String postalCode,
-                    String email, String password, String phoneNumber) {
+    public Customer(String id, String firstName, String lastName, String province, String address, String postalCode,
+                    String email, String password, String phoneNumber, List<Account> accounts) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.province = province;
@@ -29,6 +34,15 @@ public class Customer {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.accounts = accounts;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 
     @Override
@@ -43,6 +57,7 @@ public class Customer {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", accounts=" + accounts +
                 '}';
     }
 }
