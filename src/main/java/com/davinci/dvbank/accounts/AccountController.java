@@ -14,14 +14,20 @@ import java.util.List;
 @RequestMapping("/account")
 public class AccountController {
 
+    //Get a singleton of the database
     @Autowired
     private ICustomerRepository repository;
 
+    //Get a list of accounts for a particular customer
     @RequestMapping("/{customerID}/getAccounts")
     public List<Account> getAccounts(@PathVariable String customerID){
         return repository.findById(customerID).get().accounts;
     }
 
+    //Get a specific account from a particular customer
+
+
+    //Create a new account for a particular customer
     @RequestMapping("/{customerID}/addAccount")
     public String addAccount(@PathVariable String customerID, @RequestBody Account newAccount){
         Customer customerToChange = repository.findById(customerID).orElse(null);
