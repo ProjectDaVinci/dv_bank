@@ -14,7 +14,6 @@ public class CustomerController {
 
     @GetMapping("/getByFirstName/{firstName}")
     public List<Customer> getByFirstName(@PathVariable String firstName){
-
         return repository.findByFirstName(firstName);
 
 
@@ -43,10 +42,15 @@ public class CustomerController {
 //			System.out.println(customer);
 //		}
     }
-
-    @RequestMapping("/addCustomer")
-    public String addCustomer(@RequestBody Customer newCustomer){
-        repository.save(newCustomer);
-        return "Success";
+    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
+    public Customer login(@RequestBody Customer loginUser){
+         if(repository.findByEmail(loginUser.email).password.equals(loginUser.password))
+            return repository.findByEmail(loginUser.email);
+         else
+            return null;
+    }
+    @PostMapping(value = "/addCustomer", consumes = "application/json", produces = "application/json")
+    public Customer addCustomer(@RequestBody Customer newCustomer){
+        return repository.save(newCustomer);
     }
 }
