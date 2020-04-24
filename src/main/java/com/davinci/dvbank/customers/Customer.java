@@ -3,6 +3,7 @@ package com.davinci.dvbank.customers;
 import com.davinci.dvbank.accounts.Account;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -19,7 +20,7 @@ public class Customer {
     public String email;
     public String password;
     public String phoneNumber;
-    public List<Account> accounts;
+    public List<Account> accounts = new ArrayList<>();
 
     public Customer() {}
 
