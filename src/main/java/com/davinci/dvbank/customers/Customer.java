@@ -1,11 +1,9 @@
 package com.davinci.dvbank.customers;
 
 import com.davinci.dvbank.accounts.Account;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-
-import java.util.ArrayList;
 import java.util.List;
-
 
 public class Customer {
 
@@ -16,6 +14,7 @@ public class Customer {
     public String lastName;
     public String province;
     public String address;
+    public String city;
     public String postalCode;
     public String email;
     public String password;
@@ -24,13 +23,14 @@ public class Customer {
 
     public Customer() {}
 
-    public Customer(String id, String firstName, String lastName, String province, String address, String postalCode,
+    public Customer(String firstName, String lastName, String province, String address, String city, String postalCode,
                     String email, String password, String phoneNumber, List<Account> accounts) {
-        this.id = id;
+        this.id = new ObjectId().toString();
         this.firstName = firstName;
         this.lastName = lastName;
         this.province = province;
         this.address = address;
+        this.city = city;
         this.postalCode = postalCode;
         this.email = email;
         this.password = password;
@@ -38,12 +38,35 @@ public class Customer {
         this.accounts = accounts;
     }
 
+    //Return the list of accounts
     public List<Account> getAccounts() {
         return accounts;
     }
 
+    //Return a specific account
+    public Account getAccount(String accountID){
+        for (Account account : accounts) {
+            if (account.id.equals(accountID)) {
+                return account;
+            }
+        }
+
+        return null;
+    }
+
+    //Apply a change to all accounts
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    //Apply a change to a specific account
+    public void setAccount(String accountID, Account newAccount){
+        for (Account account : accounts) {
+            if (account.id.equals(accountID)) {
+                account = newAccount;
+                break;
+            }
+        }
     }
 
     @Override
@@ -54,6 +77,7 @@ public class Customer {
                 ", lastName='" + lastName + '\'' +
                 ", province='" + province + '\'' +
                 ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
                 ", postalCode='" + postalCode + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
