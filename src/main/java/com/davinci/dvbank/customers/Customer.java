@@ -19,7 +19,7 @@ public class Customer {
     public String email;
     public String password;
     public String phoneNumber;
-    public List<Account> accounts;
+    public List<Account> accounts = new ArrayList<>();
 
     public Customer() {}
 
