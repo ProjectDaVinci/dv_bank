@@ -1,5 +1,6 @@
 package com.davinci.dvbank.transactions;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
 public class Transaction {
@@ -14,8 +15,8 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(String id, String source, String timeStamp, String amount, String type) {
-        this.id = id;
+    public Transaction(String source, String timeStamp, String amount, String type) {
+        this.id = new ObjectId().toString();;
         this.source = source;
         this.timeStamp = timeStamp;
         this.amount = amount;

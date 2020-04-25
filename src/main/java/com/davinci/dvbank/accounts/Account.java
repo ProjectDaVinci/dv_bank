@@ -1,9 +1,11 @@
 package com.davinci.dvbank.accounts;
 
 import com.davinci.dvbank.transactions.Transaction;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
 import java.util.List;
+import java.util.Random;
 
 public class Account {
 
@@ -20,9 +22,9 @@ public class Account {
 
     public Account() {}
 
-    public Account(String id, String number, String type, String balance, String creationDate, String status, String creditLimit, List<Transaction> transactions) {
-        this.id = id;
-        this.number = number;
+    public Account(String type, String balance, String creationDate, String status, String creditLimit, List<Transaction> transactions) {
+        this.id = new ObjectId().toString();
+        this.number = generateAccountNum();
         this.type = type;
         this.balance = balance;
         this.creationDate = creationDate;
@@ -31,8 +33,48 @@ public class Account {
         this.transactions = transactions;
     }
 
-    public Account(String id, String number, String type, String balance, String creationDate, String status, List<Transaction> transactions) {
-        new Account(id, number, type, balance, creationDate, status, "0", transactions);
+    public Account(String type, String balance, String creationDate, String status, List<Transaction> transactions) {
+        new Account(type, balance, creationDate, status, "0", transactions);
+    }
+
+    //Return a list of all transactions
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    //Get a specific transaction
+    public Transaction getTransaction(String transID){
+        for (Transaction trans : transactions) {
+            if (trans.id.equals(transID)) {
+                return trans;
+            }
+        }
+
+        return null;
+    }
+
+    //Apply a change to all transactions
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    //Apply a change to a specific transaction
+    //Apply a change to a specific account
+    public void setTransaction(String transID, Transaction newTransaction){
+        for (Transaction trans : transactions) {
+            if (trans.id.equals(transID)) {
+                trans = newTransaction;
+                break;
+            }
+        }
+    }
+
+    //Generate a random account number in a range
+    private String generateAccountNum(){
+        Random rand = new Random();
+        int max = 5000;
+        int min = 3000;
+        return String.valueOf(rand.nextInt((max - min) + 1) + min);
     }
 
     @Override
