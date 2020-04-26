@@ -4,6 +4,10 @@ import com.davinci.dvbank.transactions.Transaction;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -21,6 +25,21 @@ public class Account {
     public List<Transaction> transactions;
 
     public Account() {}
+
+    public Account(String type) {
+        this.id = new ObjectId().toString();
+        this.number = generateAccountNum();
+        this.type = type;
+        this.balance = "0";
+
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        Date date = new Date();
+        this.creationDate = dateFormat.format(date);
+
+        this.status = "open";
+        this.creditLimit = "0";
+        this.transactions = new ArrayList<>();
+    }
 
     public Account(String type, String balance, String creationDate, String status, String creditLimit, List<Transaction> transactions) {
         this.id = new ObjectId().toString();
@@ -51,22 +70,6 @@ public class Account {
         }
 
         return null;
-    }
-
-    //Apply a change to all transactions
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
-    //Apply a change to a specific transaction
-    //Apply a change to a specific account
-    public void setTransaction(String transID, Transaction newTransaction){
-        for (Transaction trans : transactions) {
-            if (trans.id.equals(transID)) {
-                trans = newTransaction;
-                break;
-            }
-        }
     }
 
     //Generate a random account number in a range

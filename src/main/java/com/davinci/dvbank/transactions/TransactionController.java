@@ -1,6 +1,5 @@
 package com.davinci.dvbank.transactions;
 
-import com.davinci.dvbank.accounts.Account;
 import com.davinci.dvbank.customers.Customer;
 import com.davinci.dvbank.customers.ICustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +36,13 @@ public class TransactionController {
 
         try{
             Customer customerToChange = repository.findById(customerID).orElse(null);
+            Transaction transToAdd = new Transaction(newTransaction.source, newTransaction.amount, newTransaction.type);
 
             if (customerToChange == null){
                 throw new IllegalArgumentException("Null customer");
             }
 
-            customerToChange.accounts.get(Integer.parseInt(accountID)).transactions.add(newTransaction);
+            customerToChange.getAccount(accountID).getTransactions().add(transToAdd);
             repository.save(customerToChange);
             return "Success";
         }catch (IllegalArgumentException e){
@@ -90,8 +90,9 @@ public class TransactionController {
                 throw new IllegalArgumentException("Null account");
             }
 
-            //Erase the specified transaction by setting it to null
-            customerToChange.getAccount(accountID).setTransaction(transactionID, null);
+            //Remove the specified transaction
+            customerToChange.getAccount(accountID).getTransactions().remove(customerToChange.getAccount(accountID).getTransaction(transactionID));
+            repository.save(customerToChange);
             return "Success";
         }catch (IllegalArgumentException e){
             return e.getMessage();
@@ -111,7 +112,9 @@ public class TransactionController {
                 throw new IllegalArgumentException("Null account");
             }
 
-            customerToChange.getAccount(accountID).setTransactions(null);
+            //Empty out the array list
+            customerToChange.getAccount(accountID).getTransactions().clear();
+            repository.save(customerToChange);
             return "Success";
         }catch (IllegalArgumentException e){
             return e.getMessage();
