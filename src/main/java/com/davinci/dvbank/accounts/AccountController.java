@@ -25,24 +25,31 @@ public class AccountController {
         return repository.findById(customerID).get().accounts;
     }
 
-    //Get a specific account from a particular customer
-    @RequestMapping("/{customerID}/{accountID}/get")
-    public Account getAccount(@PathVariable String customerID, @PathVariable String accountID){
+    //Get a specific account by id from a particular customer
+    @RequestMapping("/{customerID}/{accountID}/getByID")
+    public Account getAccountByID(@PathVariable String customerID, @PathVariable String accountID){
         return repository.findById(customerID).get().getAccount(accountID);
     }
 
-    //Create a new account for a particular customer
-    @RequestMapping("/{customerID}/add")
-    public String addAccount(@PathVariable String customerID, @RequestBody Account newAccount){
+    //Get a specific account by type from a particular customer
+    @RequestMapping("/{customerID}/{accountType}/getByType")
+    public Account getAccountByType(@PathVariable String customerID, @PathVariable String accountType){
+        return repository.findById(customerID).get().getAccountByType(accountType);
+    }
+
+    //Create a new, blank account for a particular customer
+    @RequestMapping("/{customerID}/{accountType}/add")
+    public String addAccount(@PathVariable String customerID, @PathVariable String accountType){
       
         try{
             Customer customerToChange = repository.findById(customerID).orElse(null);
+            Account accountToAdd = new Account(accountType);
 
             if (customerToChange == null){
                 throw new IllegalArgumentException("Null customer");
             }
 
-            customerToChange.accounts.add(newAccount);
+            customerToChange.accounts.add(accountToAdd);
             repository.save(customerToChange);
             return "Success";
         }catch (IllegalArgumentException e){
@@ -89,8 +96,9 @@ public class AccountController {
                 throw new IllegalArgumentException("Null account");
             }
 
-            //Erase the specified account by setting it to null
-            customerToChange.setAccount(accountID, null);
+            //Remove the specified account from the list of accounts
+            customerToChange.getAccounts().remove(customerToChange.getAccount(accountID));
+            repository.save(customerToChange);
             return "Success";
         }catch (IllegalArgumentException e){
             return e.getMessage();
@@ -110,7 +118,9 @@ public class AccountController {
                 throw new IllegalArgumentException("Null account");
             }
 
-            customerToChange.setAccounts(null);
+            //Empty out the array list
+            customerToChange.getAccounts().clear();
+            repository.save(customerToChange);
             return "Success";
         }catch (IllegalArgumentException e){
             return e.getMessage();

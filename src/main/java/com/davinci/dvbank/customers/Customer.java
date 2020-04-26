@@ -21,9 +21,29 @@ public class Customer {
     public String email;
     public String password;
     public String phoneNumber;
-    public List<Account> accounts = new ArrayList<>();
+    public List<Account> accounts;
 
     public Customer() {}
+
+    public Customer(String firstName, String lastName, String province, String address, String city, String postalCode,
+                    String email, String password, String phoneNumber) {
+        this.id = new ObjectId().toString();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.province = province;
+        this.address = address;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.accounts = new ArrayList<>();
+
+        //Add 3 blank accounts
+        this.accounts.add(new Account("chequing"));
+        this.accounts.add(new Account("savings"));
+        this.accounts.add(new Account("credit"));
+    }
 
     public Customer(String firstName, String lastName, String province, String address, String city, String postalCode,
                     String email, String password, String phoneNumber, List<Account> accounts) {
@@ -45,7 +65,7 @@ public class Customer {
         return accounts;
     }
 
-    //Return a specific account
+    //Return a specific account by id
     public Account getAccount(String accountID){
         for (Account account : accounts) {
             if (account.id.equals(accountID)) {
@@ -56,19 +76,15 @@ public class Customer {
         return null;
     }
 
-    //Apply a change to all accounts
-    public void setAccounts(List<Account> accounts) {
-        this.accounts = accounts;
-    }
-
-    //Apply a change to a specific account
-    public void setAccount(String accountID, Account newAccount){
+    //Return a specific account by type
+    public Account getAccountByType(String type){
         for (Account account : accounts) {
-            if (account.id.equals(accountID)) {
-                account = newAccount;
-                break;
+            if (account.type.equals(type)) {
+                return account;
             }
         }
+
+        return null;
     }
 
     @Override
