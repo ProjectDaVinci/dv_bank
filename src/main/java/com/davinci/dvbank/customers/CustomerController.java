@@ -40,12 +40,15 @@ public class CustomerController {
                 newCustomer.city, newCustomer.postalCode, newCustomer.email, newCustomer.password, newCustomer.phoneNumber);
 
         //Check if the new customer's email already exists in the database
-        for (Customer customer : repository.findAll()) {
-            if (custToAdd.email.equals(customer.email)){
-                return "Email address already exists in database";
-            }
+//        for (Customer customer : repository.findAll()) {
+//            if (custToAdd.email.equals(customer.email)){
+//                return "Email address already exists in database";
+//            }
+//        }
+        Customer cus = repository.findByEmail(newCustomer.email);
+        if(cus != null){
+            return "Email address already exists in database";
         }
-
         //Save the new record if it passed the requirement
         repository.save(custToAdd);
         return "Success";
@@ -84,7 +87,6 @@ public class CustomerController {
     //Delete a customer record
     @RequestMapping("/{customerID}/delete")
     public String deleteCustomer(@PathVariable String customerID){
-
         try{
             //Get the customer that needs updating
             Customer customerToChange = repository.findById(customerID).orElse(null);
@@ -100,22 +102,13 @@ public class CustomerController {
             return e.getMessage();
         }
     }
+   //Login Customer
+    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
+    public Customer login(@RequestBody Customer loginUser){
+        if(repository.findByEmail(loginUser.email).password.equals(loginUser.password))
+            return repository.findByEmail(loginUser.email);
+        else
+            return null;
+    }
 
-//    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
-//    public Customer login(@RequestBody Customer loginUser){
-//        if(repository.findByEmail(loginUser.email).password.equals(loginUser.password))
-//            return repository.findByEmail(loginUser.email);
-//        else
-//            return null;
-//    }
-
-//    @PostMapping(value = "/addCustomer", consumes = "application/json", produces = "application/json")
-//    public Customer addCustomer(@RequestBody Customer newCustomer){
-//        return repository.save(newCustomer);
-//    }
-//
-//    @PutMapping(value="/{id}")
-//    public Customer replaceCustomer(@RequestBody Customer newCustomer, @PathVariable String id){
-//        return repository.findById(id).map(customer-> newCustomer).orElseGet(()->repository.save(newCustomer));
-//    }
 }
