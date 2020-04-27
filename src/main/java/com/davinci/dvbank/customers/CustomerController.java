@@ -35,23 +35,22 @@ public class CustomerController {
     @RequestMapping("/add")
     public String addCustomer(@RequestBody Customer newCustomer){
 
-        //Call the appropriate constructor with the new customer values
-        Customer custToAdd = new Customer(newCustomer.firstName, newCustomer.lastName, newCustomer.province, newCustomer.address,
-                newCustomer.city, newCustomer.postalCode, newCustomer.email, newCustomer.password, newCustomer.phoneNumber);
+        try{
+            //Check if the new customer's email already exists in the database
+            if (repository.findByEmail(newCustomer.email) != null){
+                throw new IllegalArgumentException("Email already exists in database");
+            }
 
-        //Check if the new customer's email already exists in the database
-//        for (Customer customer : repository.findAll()) {
-//            if (custToAdd.email.equals(customer.email)){
-//                return "Email address already exists in database";
-//            }
-//        }
-        Customer cus = repository.findByEmail(newCustomer.email);
-        if(cus != null){
-            return "Email address already exists in database";
+            //Call the appropriate constructor with the new customer values
+            Customer custToAdd = new Customer(newCustomer.firstName, newCustomer.lastName, newCustomer.province, newCustomer.address,
+                    newCustomer.city, newCustomer.postalCode, newCustomer.email, newCustomer.password, newCustomer.phoneNumber);
+
+            //Save the new record if it passed the requirement
+            repository.save(custToAdd);
+            return "Success";
+        }catch (IllegalArgumentException e){
+            return e.getMessage();
         }
-        //Save the new record if it passed the requirement
-        repository.save(custToAdd);
-        return "Success";
     }
 
     //Update an existing customer record
@@ -64,7 +63,7 @@ public class CustomerController {
 
             //Check if the record exists
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null account");
+                throw new IllegalArgumentException("Customer does not exist");
             }
 
             //Update the allowed fields with the new data
@@ -93,7 +92,7 @@ public class CustomerController {
 
             //Check if the record exists
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null account");
+                throw new IllegalArgumentException("Customer does not exist");
             }
 
             repository.deleteById(customerID);
@@ -102,7 +101,8 @@ public class CustomerController {
             return e.getMessage();
         }
     }
-   //Login Customer
+
+    //Login
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public Customer login(@RequestBody Customer loginUser){
         if(repository.findByEmail(loginUser.email).password.equals(loginUser.password))
@@ -110,5 +110,4 @@ public class CustomerController {
         else
             return null;
     }
-
 }

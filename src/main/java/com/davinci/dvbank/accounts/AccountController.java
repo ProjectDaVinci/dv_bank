@@ -2,6 +2,7 @@ package com.davinci.dvbank.accounts;
 
 import com.davinci.dvbank.customers.Customer;
 import com.davinci.dvbank.customers.ICustomerRepository;
+import com.davinci.dvbank.transactions.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +47,7 @@ public class AccountController {
             Account accountToAdd = new Account(accountType);
 
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null customer");
+                throw new IllegalArgumentException("Customer does not exist");
             }
 
             customerToChange.accounts.add(accountToAdd);
@@ -67,7 +68,11 @@ public class AccountController {
 
             //Check if the record exists
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null account");
+                throw new IllegalArgumentException("Customer does not exist");
+            }
+
+            if (customerToChange.getAccount(accountID) == null){
+                throw new IllegalArgumentException("Account does not exist");
             }
 
             //Update the allowed fields with the new data
@@ -91,9 +96,13 @@ public class AccountController {
             //Get the customer that needs updating
             Customer customerToChange = repository.findById(customerID).orElse(null);
 
-            //Check if the record exists
+            //Check if the records exist
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null account");
+                throw new IllegalArgumentException("Customer does not exist");
+            }
+
+            if (customerToChange.getAccount(accountID) == null){
+                throw new IllegalArgumentException("Account does not exist");
             }
 
             //Remove the specified account from the list of accounts
@@ -115,11 +124,53 @@ public class AccountController {
 
             //Check if the record exists
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null account");
+                throw new IllegalArgumentException("Customer does not exist");
             }
 
             //Empty out the array list
             customerToChange.getAccounts().clear();
+            repository.save(customerToChange);
+            return "Success";
+        }catch (IllegalArgumentException e){
+            return e.getMessage();
+        }
+    }
+
+    //Transfer money between accounts
+    @RequestMapping("/{customerID}/{accountFromID}/{accountToID}/{amount}/transfer")
+    public String transferMoney(@PathVariable String customerID, @PathVariable String accountFromID, @PathVariable String accountToID, @PathVariable String amount){
+
+        try{
+            //Get the customer involved in the transfer
+            Customer customerToChange = repository.findById(customerID).orElse(null);
+
+            //Check if the record exists
+            if (customerToChange == null){
+                throw new IllegalArgumentException("Customer does not exist");
+            }
+
+            //Get the accounts involved in the transfer
+            Account source = customerToChange.getAccount(accountFromID);
+            Account destination = customerToChange.getAccount(accountToID);
+
+            //Check if the records exist
+            if (source == null || destination == null){
+                throw new IllegalArgumentException("Account does not exist");
+            }
+
+            //Verify that a transfer can be made
+            if (Double.parseDouble(source.balance) < Double.parseDouble(amount)){
+                throw new IllegalArgumentException("Not enough funds for transfer");
+            }
+
+            //Update the account balances to reflect the transfer and add the new transactions
+            source.getTransactions().add(new Transaction("Home Account: " + source.type, String.format("%.2f", Double.parseDouble(amount)), "withdraw"));
+            destination.getTransactions().add(new Transaction("Home Account: " + source.type, String.format("%.2f", Double.parseDouble(amount)), "deposit"));
+
+            source.balance = String.format("%.2f", Double.parseDouble(source.balance) - Double.parseDouble(amount));
+            destination.balance = String.format("%.2f", Double.parseDouble(destination.balance) + Double.parseDouble(amount));
+
+            //Save the changes
             repository.save(customerToChange);
             return "Success";
         }catch (IllegalArgumentException e){
