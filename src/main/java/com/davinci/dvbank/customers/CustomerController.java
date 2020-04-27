@@ -86,7 +86,6 @@ public class CustomerController {
     //Delete a customer record
     @RequestMapping("/{customerID}/delete")
     public String deleteCustomer(@PathVariable String customerID){
-
         try{
             //Get the customer that needs updating
             Customer customerToChange = repository.findById(customerID).orElse(null);
