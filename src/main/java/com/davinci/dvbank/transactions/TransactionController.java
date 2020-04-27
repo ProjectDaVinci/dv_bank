@@ -21,7 +21,7 @@ public class TransactionController {
     //Get all transactions of a specific customer's specific account
     @RequestMapping("/{customerID}/{accountID}/getTransactions")
     public List<Transaction> getTransactions(@PathVariable String customerID, @PathVariable String accountID){
-        return repository.findById(customerID).get().getAccount(accountID).transactions;
+        return repository.findById(customerID).get().getAccount(accountID).getTransactions();
     }
 
     //Get a transaction of a specific customer's specific account
@@ -39,7 +39,11 @@ public class TransactionController {
             Transaction transToAdd = new Transaction(newTransaction.source, newTransaction.amount, newTransaction.type);
 
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null customer");
+                throw new IllegalArgumentException("Customer does not exist");
+            }
+
+            if (customerToChange.getAccount(accountID) == null){
+                throw new IllegalArgumentException("Account does not exist");
             }
 
             customerToChange.getAccount(accountID).getTransactions().add(transToAdd);
@@ -58,9 +62,17 @@ public class TransactionController {
             //Get the customer that needs updating
             Customer customerToChange = repository.findById(customerID).orElse(null);
 
-            //Check if the record exists
+            //Check if the records exist
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null account");
+                throw new IllegalArgumentException("Customer does not exist");
+            }
+
+            if (customerToChange.getAccount(accountID) == null){
+                throw new IllegalArgumentException("Account does not exist");
+            }
+
+            if (customerToChange.getAccount(accountID).getTransaction(transactionID) == null){
+                throw new IllegalArgumentException("Transaction does not exist");
             }
 
             //Update the allowed fields with the new data
@@ -85,9 +97,17 @@ public class TransactionController {
             //Get the customer that needs updating
             Customer customerToChange = repository.findById(customerID).orElse(null);
 
-            //Check if the record exists
+            //Check if the records exist
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null account");
+                throw new IllegalArgumentException("Customer does not exist");
+            }
+
+            if (customerToChange.getAccount(accountID) == null){
+                throw new IllegalArgumentException("Account does not exist");
+            }
+
+            if (customerToChange.getAccount(accountID).getTransaction(transactionID) == null){
+                throw new IllegalArgumentException("Transaction does not exist");
             }
 
             //Remove the specified transaction
@@ -107,13 +127,20 @@ public class TransactionController {
             //Get the customer that needs updating
             Customer customerToChange = repository.findById(customerID).orElse(null);
 
-            //Check if the record exists
+            //Check if the records exist
             if (customerToChange == null){
-                throw new IllegalArgumentException("Null account");
+                throw new IllegalArgumentException("Customer does not exist");
+            }
+
+            if (customerToChange.getAccount(accountID) == null){
+                throw new IllegalArgumentException("Account does not exist");
             }
 
             //Empty out the array list
-            customerToChange.getAccount(accountID).getTransactions().clear();
+            if (customerToChange.getAccount(accountID).getTransactions().size() > 0){
+                customerToChange.getAccount(accountID).getTransactions().clear();
+            }
+
             repository.save(customerToChange);
             return "Success";
         }catch (IllegalArgumentException e){
